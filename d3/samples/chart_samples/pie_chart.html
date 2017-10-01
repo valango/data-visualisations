@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Pie Chart Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+
+    <svg class="pie" width="1000" height="500"></svg>
+
+    <script>
+
+      var sales = [
+        { product: 'Snickers',  count: 12 },
+        { product: 'Twix',  count: 30 },
+        { product: 'Pez', count: 9 },
+        { product: 'Nerds', count: 19 },
+        { product: 'Rollos', count: 10 },
+        { product: 'Altoids', count: 5 },
+        { product: 'N/A', count: 15 },
+      ];
+
+      var pie = d3.pie().value(function(d) { return d.count });
+
+      var slices = pie(sales);
+
+      var arc = d3.arc()
+        .innerRadius(0)// no hole in the middle
+        .outerRadius(200);
+
+      var colorScale = d3.scaleOrdinal(d3.schemeCategory10); //10 random colors
+
+      var svg = d3.select("svg.pie");
+      var g = svg.append("g") //set chart center position
+        .attr("transform", "translate(500, 250)");
+
+      g.selectAll("path.slice")
+        .data(slices)
+          .enter()
+            .append("path")
+              .attr("class", "slice")
+              .attr("d", arc)
+              .attr("fill", function(d){
+                return colorScale(d.data.product);
+              })
+
+      svg.append("g") //legend
+        .attr("class", "legend")
+          .selectAll("text")
+          .data(slices)
+            .enter()
+              .append("text")
+                .text(function(d){
+                  return "* " + d.data.product + " (" + d.data.count + ")";
+                })
+                .attr("fill", function(d){ return colorScale(d.data.product); })
+                .attr("y", function(d, i){ return 20 * (i + 1); })
+                .attr("transform", "translate(100, 50)");
+
+    </script>
+  </body>
+</html>
